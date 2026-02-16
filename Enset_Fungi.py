@@ -32,11 +32,10 @@ def generate_handbook(lang):
     handbook.append(get_text("prediction_result_header", lang))
     return "\n".join(handbook)
 
-# --- Sidebar UI FIRST ---
+# --- Sidebar UI ---
 selected_lang = st.sidebar.radio("Select Language / ቋንቋ ይምረጡ", ["english", "amharic"])
 st.session_state.lang = selected_lang
 
-# Status badge placeholder
 status_placeholder = st.sidebar.empty()
 def update_status():
     if st.session_state.model_loaded:
@@ -49,18 +48,15 @@ def update_status():
 
 update_status()
 
-# Reset button
 if st.sidebar.button("🔄 Reset Model Status"):
     st.session_state.model_loaded = False
     st.session_state.model_loaded_time = None
     update_status()
     st.sidebar.success("Model status reset. It will reload on next prediction.")
 
-# Handbook download
 sidebar_handbook = generate_handbook(selected_lang)
 st.sidebar.download_button("📥 Download Handbook", sidebar_handbook, file_name="handbook.txt")
 
-# Footer
 st.sidebar.markdown("---")
 st.sidebar.markdown(
     """
@@ -74,7 +70,7 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
-# --- Lazy imports and model logic ---
+# --- Model loading ---
 @st.cache_resource
 def load_ensemble_model():
     import torch
@@ -97,14 +93,8 @@ def load_ensemble_model():
             swin_out = self.swin(x)
             return (vit_out + swin_out) / 2
 
-<<<<<<< HEAD
-    data_dir = 'E:\Enset'
-=======
-    data_dir = 'https://github.com/wolde0916/enset-fungi-app/blob/main/ensemble_best.pth'
-    data_dir = 'https://github.com/wolde0916/enset-fungi-app/blob/main/ensemble_best.pth'
->>>>>>> bf4583b7d74aba8186c2db1511ce2a4a451f01c1
-    ensemble_model_path = os.path.join(data_dir, 'ensemble_best.pth')
-
+# ✅ FIX: Use local file path, not GitHub URL
+    ensemble_model_path = "ensemble_best.pth"
     progress = st.progress(0)
     model = EnsembleModel(num_classes)
     progress.progress(30)
@@ -124,7 +114,6 @@ def load_ensemble_model():
     progress.progress(100)
     st.success("✅ Model loaded successfully!")
 
-    # Update sidebar badge
     st.session_state.model_loaded = True
     st.session_state.model_loaded_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     update_status()
