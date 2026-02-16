@@ -161,3 +161,4 @@ if uploaded_file is not None:
         prediction = ensemble_predict(image)
     st.subheader(get_text("prediction_result_header", st.session_state.lang))
     st.write(prediction)
+
