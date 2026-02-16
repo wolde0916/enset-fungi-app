@@ -70,7 +70,7 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
-# --- Model loading ---
+# --- Model loading (NO STREAMLIT UI INSIDE) ---
 @st.cache_resource
 def load_ensemble_model():
     import torch
@@ -93,31 +93,18 @@ def load_ensemble_model():
             swin_out = self.swin(x)
             return (vit_out + swin_out) / 2
 
-# ✅ FIX: Use local file path, not GitHub URL
-    ensemble_model_path = "ensemble_best.pth"
-    progress = st.progress(0)
     model = EnsembleModel(num_classes)
-    progress.progress(30)
+    ensemble_model_path = "ensemble_best.pth"
 
     if os.path.exists(ensemble_model_path):
         checkpoint = torch.load(ensemble_model_path, map_location=device)
         model.vit.load_state_dict(checkpoint['vit'])
-        progress.progress(60)
         model.swin.load_state_dict(checkpoint['swin'])
-        progress.progress(90)
     else:
-        st.error(f"❌ Ensemble model weights not found at {ensemble_model_path}")
         return None, device
 
     model = model.to(device)
     model.eval()
-    progress.progress(100)
-    st.success("✅ Model loaded successfully!")
-
-    st.session_state.model_loaded = True
-    st.session_state.model_loaded_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    update_status()
-
     return model, device
 
 def ensemble_predict(image_data):
@@ -128,6 +115,12 @@ def ensemble_predict(image_data):
     if model is None:
         st.warning("Model not loaded correctly. Cannot predict.")
         return "Error"
+
+    # Mark model as loaded (UI OUTSIDE cached function)
+    if not st.session_state.model_loaded:
+        st.session_state.model_loaded = True
+        st.session_state.model_loaded_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        update_status()
 
     eval_tf = transforms.Compose([
         transforms.Resize((224, 224)),
