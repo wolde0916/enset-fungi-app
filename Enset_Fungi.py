@@ -93,9 +93,8 @@ def load_ensemble_model():
             swin_out = self.swin(x)
             return (vit_out + swin_out) / 2
 
-    # ✅ FIX: Use local file path, not GitHub URL
+# ✅ FIX: Use local file path, not GitHub URL
     ensemble_model_path = "ensemble_best.pth"
-
     progress = st.progress(0)
     model = EnsembleModel(num_classes)
     progress.progress(30)
