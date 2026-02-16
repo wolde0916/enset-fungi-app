@@ -97,7 +97,7 @@ def load_ensemble_model():
             swin_out = self.swin(x)
             return (vit_out + swin_out) / 2
 
-    data_dir = '/content/drive/MyDrive/Enset/Enset_Fungi/plots'
+    data_dir = 'https://github.com/wolde0916/enset-fungi-app/blob/main/ensemble_best.pth'
     ensemble_model_path = os.path.join(data_dir, 'ensemble_best.pth')
 
     progress = st.progress(0)
