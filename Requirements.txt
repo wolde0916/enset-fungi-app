@@ -1,0 +1,18 @@
+# Core framework
+streamlit==1.32.0
+
+# Image handling
+Pillow==10.2.0
+
+# Data handling
+pandas==2.2.0
+
+# PyTorch + torchvision (for model inference)
+torch==2.2.0
+torchvision==0.17.0
+
+# TIMM (for Swin Transformer and other vision models)
+timm==0.9.12
+
+# Utilities
+numpy==1.26.4
