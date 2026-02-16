@@ -2,6 +2,8 @@ import streamlit as st
 from PIL import Image
 import os
 from datetime import datetime
+from fpdf import FPDF
+from gtts import gTTS
 
 # --- Session state ---
 if "lang" not in st.session_state:
@@ -28,7 +30,7 @@ CLASS_NAMES = {
     "amharic": ['የቆርም ብስባሽ', 'ጤናማ', 'የቅጠል ስፖት', 'የሸለቆች ብስባሽ']
 }
 
-# --- Bilingual disease info (symptoms, prevention, treatment) ---
+# --- Bilingual disease info ---
 DISEASE_INFO = {
     "english": {
         "Corm_Rot": {
@@ -136,6 +138,40 @@ if model is not None and not st.session_state.model_loaded:
     st.session_state.model_loaded_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     update_status()
 
+# --- PDF Generator ---
+def generate_pdf(disease_name, info, lang):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=14)
+
+    title = "Enset Disease Farmer Guide" if lang=="english" else "የእንሰት በሽታ መመሪያ"
+    pdf.cell(0, 10, txt=title, ln=True)
+
+    pdf.set_font("Arial", size=12)
+    pdf.ln(5)
+    pdf.multi_cell(0, 10, txt=f"Disease: {disease_name}")
+
+    pdf.ln(5)
+    pdf.multi_cell(0, 10, txt="Symptoms:" if lang=="english" else "ምልክቶች:")
+    pdf.multi_cell(0, 10, txt=info["symptoms"])
+
+    pdf.ln(5)
+    pdf.multi_cell(0, 10, txt="Prevention:" if lang=="english" else "መከላከያ:")
+    pdf.multi_cell(0, 10, txt=info["prevention"])
+
+    pdf.ln(5)
+    pdf.multi_cell(0, 10, txt="Treatment:" if lang=="english" else "ሕክምና:")
+    pdf.multi_cell(0, 10, txt=info["treatment"])
+
+    return pdf.output(dest="S").encode("latin1")
+
+# --- Voice Narration ---
+def generate_voice(text, lang):
+    tts = gTTS(text=text, lang="am" if lang=="amharic" else "en")
+    audio_path = "voice_output.mp3"
+    tts.save(audio_path)
+    return audio_path
+
 # --- Prediction function ---
 def ensemble_predict(image_data):
     import torch
@@ -187,3 +223,22 @@ if uploaded_file is not None:
 
     st.markdown("### 💊 Treatment")
     st.write(info["treatment"])
+
+    # --- PDF Download ---
+    pdf_bytes = generate_pdf(pred_label, info, st.session_state.lang)
+    st.download_button(
+        label="📄 Download Farmer Guide (PDF)",
+        data=pdf_bytes,
+        file_name="farmer_guide.pdf",
+        mime="application/pdf"
+    )
+
+    # --- Voice Narration ---
+    narration_text = (
+        f"{pred_label}. Symptoms: {info['symptoms']}. Prevention: {info['prevention']}. Treatment: {info['treatment']}"
+        if st.session_state.lang == "english"
+        else f"{pred_label}። ምልክቶች፦ {info['symptoms']}። መከላከያ፦ {info['prevention']}። ሕክምና፦ {info['treatment']}።"
+    )
+
+    audio_file = generate_voice(narration_text, st.session_state.lang)
+    st.audio(audio_file, format="audio/mp3")
