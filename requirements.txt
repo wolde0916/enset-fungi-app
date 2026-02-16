@@ -2,12 +2,10 @@ streamlit==1.32.0
 Pillow==10.2.0
 pandas==2.2.0
 
-# PyTorch stable CPU wheels for Streamlit Cloud
 torch==2.0.1
 torchvision==0.15.2
 torchaudio==2.0.2
 
-# TIMM compatible with PyTorch 2.0.1
 timm==0.6.13
 
 numpy==1.26.4
