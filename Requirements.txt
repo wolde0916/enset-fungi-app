@@ -7,7 +7,7 @@ Pillow==10.2.0
 # Data handling
 pandas==2.2.0
 
-# PyTorch + torchvision (stable CPU wheels)
+# PyTorch + torchvision (stable CPU wheels for Streamlit Cloud)
 torch==2.1.0
 torchvision==0.16.0
 torchaudio==2.1.0
