@@ -1,4 +1,3 @@
-%%writefile app.py
 import streamlit as st
 from PIL import Image
 import os
@@ -98,8 +97,8 @@ def load_ensemble_model():
             swin_out = self.swin(x)
             return (vit_out + swin_out) / 2
 
-    data_dir = '/content/drive/MyDrive/Enset/Enset_Fungi/plots'
-    ensemble_model_path = os.path.join(data_dir, 'ensemble_final.pth')
+    data_dir = 'E:\Enset'
+    ensemble_model_path = os.path.join(data_dir, 'ensemble_best.pth')
 
     progress = st.progress(0)
     model = EnsembleModel(num_classes)
