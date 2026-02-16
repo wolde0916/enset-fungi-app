@@ -9,3 +9,6 @@ torchaudio==2.1.0
 timm==0.9.12
 
 numpy==1.26.4
+
+fpdf==1.7.2
+gTTS==2.5.1
