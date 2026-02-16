@@ -97,11 +97,8 @@ def load_ensemble_model():
             swin_out = self.swin(x)
             return (vit_out + swin_out) / 2
 
-<<<<<<< HEAD
-    data_dir = 'E:\Enset'
-=======
     data_dir = 'https://github.com/wolde0916/enset-fungi-app/blob/main/ensemble_best.pth'
->>>>>>> 25e8401eea9d74c5ce82c41cad9bf12c5a4da119
+    data_dir = 'https://github.com/wolde0916/enset-fungi-app/blob/main/ensemble_best.pth'
     ensemble_model_path = os.path.join(data_dir, 'ensemble_best.pth')
 
     progress = st.progress(0)
