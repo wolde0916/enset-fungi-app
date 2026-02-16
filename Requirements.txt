@@ -7,9 +7,10 @@ Pillow==10.2.0
 # Data handling
 pandas==2.2.0
 
-# PyTorch + torchvision (for model inference)
-torch==2.2.0
-torchvision==0.17.0
+# PyTorch + torchvision (stable CPU wheels)
+torch==2.1.0
+torchvision==0.16.0
+torchaudio==2.1.0
 
 # TIMM (for Swin Transformer and other vision models)
 timm==0.9.12
