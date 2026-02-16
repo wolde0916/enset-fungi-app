@@ -107,6 +107,14 @@ def load_ensemble_model():
     model.eval()
     return model, device
 
+# --- Preload model ONCE at startup ---
+model, device = load_ensemble_model()
+
+if model is not None and not st.session_state.model_loaded:
+    st.session_state.model_loaded = True
+    st.session_state.model_loaded_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    update_status()
+
 def ensemble_predict(image_data):
     import torch
     import torchvision.transforms as transforms
@@ -115,12 +123,6 @@ def ensemble_predict(image_data):
     if model is None:
         st.warning("Model not loaded correctly. Cannot predict.")
         return "Error"
-
-    # Mark model as loaded (UI OUTSIDE cached function)
-    if not st.session_state.model_loaded:
-        st.session_state.model_loaded = True
-        st.session_state.model_loaded_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        update_status()
 
     eval_tf = transforms.Compose([
         transforms.Resize((224, 224)),
