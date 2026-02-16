@@ -1,21 +1,20 @@
-# Core framework
 streamlit==1.32.0
-
-# Image handling
 Pillow==10.2.0
-
-# Data handling
 pandas==2.2.0
 
+<<<<<<< HEAD
 # PyTorch + torchvision (stable CPU wheels)
 
 # PyTorch + torchvision (stable CPU wheels for Streamlit Cloud)
 torch==2.1.0
 torchvision==0.16.0
 torchaudio==2.1.0
+=======
+torch==2.0.1
+torchvision==0.15.2
+torchaudio==2.0.2
+>>>>>>> origin/main
 
-# TIMM (for Swin Transformer and other vision models)
-timm==0.9.12
+timm==0.6.13
 
-# Utilities
 numpy==1.26.4
