@@ -97,9 +97,11 @@ def load_ensemble_model():
             swin_out = self.swin(x)
             return (vit_out + swin_out) / 2
 
-    
-    ensemble_model_path = 'ensemble_best.pth'
+    model = EnsembleModel()
+    path = "ensemble_best.pth"
 
+    if not os.path.exists(path):
+        return None, device
     progress = st.progress(0)
     model = EnsembleModel(num_classes)
     progress.progress(30)
