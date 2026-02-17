@@ -24,50 +24,12 @@ translations = {
 def get_text(key, lang):
     return translations.get(key, {}).get(lang, f"[{key}]")
 
-# --- Disease Names (bilingual) ---
-CLASS_NAMES = {
-    "Corm_Rot": {"english": "Corm Rot", "amharic": "የኮርም በሽታ"},
-    "Healthy": {"english": "Healthy", "amharic": "ጤናማ"},
-    "Leaf_Spot": {"english": "Leaf Spot", "amharic": "የቅጠል ነጠብጣብ"},
-    "Sheath_Rot": {"english": "Sheath Rot", "amharic": "የሸማት በሽታ"}
-}
-
-# --- Treatment Map ---
-TREATMENT_MAP = {
-    "Corm_Rot": {
-        "english": "Remove infected corms, improve drainage, and apply fungicide.",
-        "amharic": "የተያዙ ኮርሞችን ያስወግዱ፣ ውሃ እንዳይቆይ ያድርጉ፣ ፈንገስ አስወግድ ይጠቀሙ።"
-    },
-    "Healthy": {
-        "english": "No treatment needed. Maintain good field hygiene.",
-        "amharic": "ምንም ህክምና አያስፈልግም። መልካም የእርሻ ንጽህና ይጠብቁ።"
-    },
-    "Leaf_Spot": {
-        "english": "Use resistant varieties, remove affected leaves, and apply fungicide.",
-        "amharic": "ተቋቋማ ዝርያዎችን ይጠቀሙ፣ የተያዙ ቅጠሎችን ያስወግዱ፣ ፈንገስ አስወግድ ይጠቀሙ።"
-    },
-    "Sheath_Rot": {
-        "english": "Improve air circulation, avoid overcrowding, and apply fungicide.",
-        "amharic": "አየር እንዲያልፍ ያድርጉ፣ ተክሎችን አብዛኛውን አታስቀምጡ፣ ፈንገስ አስወግድ ይጠቀሙ።"
-    }
-}
-
 #@st.cache_data
 def generate_handbook(lang):
     handbook = []
     handbook.append(get_text("app_title", lang))
     handbook.append("\n" + "="*50 + "\n")
     handbook.append(get_text("prediction_result_header", lang))
-    handbook.append("\n")
-
-    # Add treatment map for each disease
-    for disease_key, names in CLASS_NAMES.items():
-        disease_name = names[lang]
-        treatment = TREATMENT_MAP[disease_key][lang]
-        handbook.append(f"🦠 {disease_name}\n")
-        handbook.append(f"💊 {treatment}\n")
-        handbook.append("-"*40 + "\n")
-
     return "\n".join(handbook)
 
 # --- Sidebar UI FIRST ---
@@ -169,7 +131,9 @@ def ensemble_predict(image_data):
     model, device = load_ensemble_model()
     if model is None:
         st.warning("Model not loaded correctly. Cannot predict.")
-        eval_tf = transforms.Compose([
+        return "Error"
+
+    eval_tf = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
         transforms.Normalize(mean=(0.485, 0.456, 0.406),
@@ -181,12 +145,8 @@ def ensemble_predict(image_data):
         output = model(img_tensor)
         predicted_idx = torch.argmax(output, dim=1).item()
 
-    # Map prediction to bilingual label
-    predicted_key = list(CLASS_NAMES.keys())[predicted_idx]
-    prediction_label = CLASS_NAMES[predicted_key][st.session_state.lang]
-    treatment_text = TREATMENT_MAP[predicted_key][st.session_state.lang]
-
-    return prediction_label, treatment_text
+    CLASS_NAMES = ['Corm_Rot', 'Healthy', 'Leaf_Spot', 'Sheath_Rot']
+    return CLASS_NAMES[predicted_idx]
 
 # --- Main UI ---
 st.title(get_text("app_title", st.session_state.lang))
@@ -196,8 +156,6 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption=get_text("uploaded_image_caption", st.session_state.lang))
     with st.spinner("Running prediction..."):
-        prediction, treatment = ensemble_predict(image)
-
+        prediction = ensemble_predict(image)
     st.subheader(get_text("prediction_result_header", st.session_state.lang))
-    st.write(f"🦠 {prediction}")
-    st.markdown(f"**💊 Treatment Recommendation:** {treatment}")
+    st.write(prediction)
