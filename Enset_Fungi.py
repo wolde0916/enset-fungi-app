@@ -1,4 +1,3 @@
-
 import streamlit as st
 from PIL import Image
 import os
@@ -33,7 +32,33 @@ translations = {
     "farmer_handbook_header": {"english": "📘 Farmer Handbook", "amharic": "📘 የገበሬ መመሪያ"},
     "upload_image_header": {"english": "📤 Upload Image", "amharic": "📤 ምስል ይስቀሉ"},
     "symptoms_header": {"english": "Symptoms:", "amharic": "ምልክቶች፡"},
-    "treatment_header": {"english": "Treatment:", "amharic": "ሕክምና፡"}
+    "treatment_header": {"english": "Treatment:", "amharic": "ሕክምና፡"},
+    "select_language": {"english": "Select Language / ቋንቋ ይምረጡ", "amharic": "ቋንቋ ይምረጡ / Select Language"},
+    "model_ready": {"english": "✅ Model ready", "amharic": "✅ ሞዴል ዝግጁ ነው"},
+    "model_loaded_at": {"english": "Loaded at", "amharic": "በሰዓት የተጫነ"},
+    "model_not_loaded": {"english": "⏳ Model not loaded yet", "amharic": "⏳ ሞዴል ገና አልተጫነም"},
+    "reset_model_status": {"english": "🔄 Reset Model Status", "amharic": "🔄 የሞዴል ሁኔታን ዳግም አስጀምር"},
+    "model_status_reset": {"english": "Model status reset. It will reload on next prediction.", "amharic": "የሞዴል ሁኔታ ዳግም ተጀምሯል፡፡ በሚቀጥለው ትንበያ ይጫናል።"},
+    "download_handbook": {"english": "📥 Download Handbook", "amharic": "📥 መመሪያውን ያውርዱ"},
+    "download_session_log": {"english": "📊 Download Session Log (CSV)", "amharic": "📊 የክፍለ ጊዜ መዝገብ ያውርዱ (CSV)"},
+    "last_prediction_at": {"english": "🕒 Last prediction at", "amharic": "🕒 የመጨረሻ ትንበያ በ"},
+    "total_predictions": {"english": "📊 Total predictions this session:", "amharic": "📊 በዚህ ክፍለ ጊዜ ጠቅላላ ትንበያዎች፡"},
+    "developed_by": {"english": "👨‍💻 Developed by", "amharic": "👨‍💻 የተዘጋጀው በ"},
+    "version": {"english": "📌 Version", "amharic": "📌 ስሪት"},
+    "contact_developer": {"english": "📧 Contact Developer", "amharic": "📧 ገንቢውን ያግኙ"},
+    "loading_model_weights": {"english": "Loading model weights...", "amharic": "የሞዴል ክብደቶችን በመጫን ላይ..."},
+    "loading_vit_swin": {"english": "Loading ViT and Swin models...", "amharic": "ViT እና Swin ሞዴሎችን በመጫን ላይ..."},
+    "loading_vit_weights": {"english": "Loading ViT weights...", "amharic": "ViT ክብደቶችን በመጫን ላይ..."},
+    "loading_swin_weights": {"english": "Loading Swin weights...", "amharic": "Swin ክብደቶችን በመጫን ላይ..."},
+    "model_loaded_success": {"english": "Model loaded successfully!", "amharic": "ሞዴሉ በተሳካ ሁኔታ ተጭኗል!"},
+    "error_loading_weights": {"english": "❌ Error loading model weights:", "amharic": "❌ የሞዴል ክብደቶችን በመጫን ላይ ስህተት ተፈጠረ፡"},
+    "weights_not_found": {"english": "❌ Ensemble model weights not found at", "amharic": "❌ የተጣመረው ሞዴል ክብደቶች አልተገኙም"},
+    "model_not_loaded_correctly": {"english": "Model not loaded correctly. Cannot predict.", "amharic": "ሞዴሉ በትክክል አልተጫነም፡፡ መተንበይ አይቻልም።"},
+    "prediction_failed": {"english": "Prediction failed.", "amharic": "ትንበያ አልተሳካም።"},
+    "running_prediction": {"english": "Running prediction...", "amharic": "ትንበያ በመስራት ላይ..."},
+    "filter_predictions": {"english": "Filter predictions by type:", "amharic": "ትንበያዎችን በአይነት አጣራ፡"},
+    "all": {"english": "All", "amharic": "ሁሉም"},
+    "session_log": {"english": "📊 Session Log", "amharic": "📊 የክፍለ ጊዜ መዝገብ"}
 }
 
 def get_text(key, lang):
@@ -88,7 +113,8 @@ disease_info = {
             "symptoms": ["ምንም የበሽታ ምልክቶች አይታዩም።"],
             "treatment": ["ጥሩ የግብርና አሰራሮችን ይቀጥሉ።"]
         }
-    },
+    }
+    ,
     "Leaf_Spot": {
         "english": {
             "symptoms": [
@@ -156,9 +182,9 @@ def generate_handbook(lang):
     for disease_idx in DISEASE_CLASS_NAMES_MAP:
         disease_english_name = DISEASE_CLASS_NAMES_MAP[disease_idx]["english"]
         disease_display_name = DISEASE_CLASS_NAMES_MAP[disease_idx][lang]
-        
+
         handbook.append(f"Disease: {disease_display_name} ({disease_english_name})")
-        
+
         if disease_english_name in disease_info:
             current_lang_info = disease_info[disease_english_name][lang]
             handbook.append(get_text("symptoms_header", lang))
@@ -177,7 +203,7 @@ def resize_image_for_display(image: Image.Image, max_dimension=500) -> Image.Ima
     width, height = image.size
     if max(width, height) <= max_dimension:
         return image
-    
+
     aspect_ratio = width / height
     if width > height:
         new_width = max_dimension
@@ -185,22 +211,28 @@ def resize_image_for_display(image: Image.Image, max_dimension=500) -> Image.Ima
     else:
         new_height = max_dimension
         new_width = int(new_height * aspect_ratio)
-    
+
     return image.resize((new_width, new_height), Image.Resampling.LANCZOS)
 
 # --- Sidebar UI FIRST ---
-selected_lang = st.sidebar.radio("Select Language / ቋንቋ ይምረጡ", ["english", "amharic"])
+lang_options = ["english", "amharic"]
+initial_lang_index = lang_options.index(st.session_state.lang)
+selected_lang = st.sidebar.radio(
+    get_text("select_language", st.session_state.lang),
+    lang_options,
+    index=initial_lang_index
+)
 st.session_state.lang = selected_lang
 
 # Status badge placeholder
 status_placeholder = st.sidebar.empty()
 def update_status():
     if st.session_state.model_loaded:
-        status_html = "<span style='color:green; font-weight:bold;'>✅ Model ready</span>"
+        status_html = f"<span style='color:green; font-weight:bold;'>{get_text('model_ready', st.session_state.lang)}</span>"
         if st.session_state.model_loaded_time:
-            status_html += f"<br><small>Loaded at {st.session_state.model_loaded_time}</small>"
+            status_html += f"<br><small>{get_text('model_loaded_at', st.session_state.lang)} {st.session_state.model_loaded_time}</small>"
     else:
-        status_html = "<span style='color:orange; font-weight:bold;'>⏳ Model not loaded yet</span>"
+        status_html = f"<span style='color:orange; font-weight:bold;'>{get_text('model_not_loaded', st.session_state.lang)}</span>"
     status_placeholder.markdown(status_html, unsafe_allow_html=True)
 
 update_status()
@@ -211,16 +243,16 @@ prediction_count_placeholder = st.sidebar.empty()
 
 if st.session_state.last_prediction_time:
     prediction_time_placeholder.markdown(
-        f"<small>🕒 Last prediction at {st.session_state.last_prediction_time}</small>",
+        f"<small>{get_text('last_prediction_at', st.session_state.lang)} {st.session_state.last_prediction_time}</small>",
         unsafe_allow_html=True
     )
 prediction_count_placeholder.markdown(
-    f"<small>📊 Total predictions this session: {st.session_state.prediction_count}</small>",
+    f"<small>{get_text('total_predictions', st.session_state.lang)} {st.session_state.prediction_count}</small>",
     unsafe_allow_html=True
 )
 
 # Reset button
-if st.sidebar.button("🔄 Reset Model Status"):
+if st.sidebar.button(get_text("reset_model_status", st.session_state.lang)):
     st.session_state.model_loaded = False
     st.session_state.model_loaded_time = None
     st.session_state.last_prediction_time = None
@@ -229,27 +261,27 @@ if st.sidebar.button("🔄 Reset Model Status"):
     update_status()
     prediction_time_placeholder.empty()
     prediction_count_placeholder.empty()
-    st.sidebar.success("Model status reset. It will reload on next prediction.")
+    st.sidebar.success(get_text("model_status_reset", st.session_state.lang))
 
 # Handbook download
 sidebar_handbook = generate_handbook(selected_lang)
-st.sidebar.download_button("📥 Download Handbook", sidebar_handbook, file_name="farmer_handbook.txt")
+st.sidebar.download_button(get_text("download_handbook", st.session_state.lang), sidebar_handbook, file_name="farmer_handbook.txt")
 
 # Session log download
 if st.session_state.prediction_log:
     df_log = pd.DataFrame(st.session_state.prediction_log)
     csv_log = df_log.to_csv(index=False).encode("utf-8")
-    st.sidebar.download_button("📊 Download Session Log (CSV)", csv_log, file_name="prediction_log.csv")
+    st.sidebar.download_button(get_text("download_session_log", st.session_state.lang), csv_log, file_name="prediction_log.csv")
 
 # Footer
 st.sidebar.markdown("---")
 st.sidebar.markdown(
-    """
+    f"""
     <div style='text-align:center; color:gray; font-size:small;'>
-    👨‍💻 Developed by <b>Woldekidan Gudelo Dike</b><br>
+    {get_text('developed_by', st.session_state.lang)} <b>Woldekidan Gudelo Dike</b><br>
     🏫 <b>Dilla University</b><br>
-    📌 Version 1.0<br>
-    📧 <a href="mailto:woldekidan.gudelo@du.edu.et">Contact Developer</a>
+    {get_text('version', st.session_state.lang)} 1.0<br>
+    {get_text('contact_developer', st.session_state.lang)} <a href="mailto:woldekidan.gudelo@du.edu.et">Contact Developer</a>
     </div>
     """,
     unsafe_allow_html=True
@@ -278,30 +310,30 @@ def load_ensemble_model():
 
     ensemble_model_path = "ensemble_best.pth"
     progress_text = st.empty()
-    progress = progress_text.progress(0, text="Loading model weights...")
+    progress = progress_text.progress(0, text=get_text("loading_model_weights", st.session_state.lang))
 
     model = EnsembleModel(num_classes)
-    progress.progress(30, text="Loading ViT and Swin models...")
+    progress.progress(30, text=get_text("loading_vit_swin", st.session_state.lang))
 
     if os.path.exists(ensemble_model_path):
         try:
             checkpoint = torch.load(ensemble_model_path, map_location=device)
             model.vit.load_state_dict(checkpoint['vit'])
-            progress.progress(60, text="Loading ViT weights...")
+            progress.progress(60, text=get_text("loading_vit_weights", st.session_state.lang))
             model.swin.load_state_dict(checkpoint['swin'])
-            progress.progress(90, text="Loading Swin weights...")
+            progress.progress(90, text=get_text("loading_swin_weights", st.session_state.lang))
         except Exception as e:
-            st.error(f"❌ Error loading model weights: {e}")
+            st.error(f"{get_text('error_loading_weights', st.session_state.lang)} {e}")
             return None, device
     else:
-        st.error(f"❌ Ensemble model weights not found at {ensemble_model_path}")
+        st.error(f"{get_text('weights_not_found', st.session_state.lang)} {ensemble_model_path}")
         return None, device
 
     model = model.to(device)
     model.eval()
-    progress.progress(100, text="Model loaded successfully!")
+    progress.progress(100, text=get_text("model_loaded_success", st.session_state.lang))
     progress_text.empty() # Clear the progress bar after completion
-    st.success("✅ Model loaded successfully!")
+    st.success(get_text("model_loaded_success", st.session_state.lang))
 
     st.session_state.model_loaded = True
     st.session_state.model_loaded_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -314,7 +346,7 @@ def load_ensemble_model():
 def ensemble_predict(image_data):
     model, device = load_ensemble_model()
     if model is None:
-        st.warning("Model not loaded correctly. Cannot predict.")
+        st.warning(get_text("model_not_loaded_correctly", st.session_state.lang))
         return -1 # Return an invalid index for error
 
     eval_tf = transforms.Compose([
@@ -341,11 +373,11 @@ def ensemble_predict(image_data):
     })
 
     prediction_time_placeholder.markdown(
-        f"<small>🕒 Last prediction at {st.session_state.last_prediction_time}</small>",
+        f"<small>{get_text('last_prediction_at', st.session_state.lang)} {st.session_state.last_prediction_time}</small>",
         unsafe_allow_html=True
     )
     prediction_count_placeholder.markdown(
-        f"<small>📊 Total predictions this session: {st.session_state.prediction_count}</small>",
+        f"<small>{get_text('total_predictions', st.session_state.lang)} {st.session_state.prediction_count}</small>",
         unsafe_allow_html=True
     )
 
@@ -357,12 +389,12 @@ uploaded_file = st.file_uploader(get_text("upload_image_label", st.session_state
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file).convert("RGB")
-    
+
     # Resize image for display
     display_image = resize_image_for_display(image)
-    st.image(display_image, caption=get_text("uploaded_image_caption", st.session_state.lang), width=500) # Replaced use_column_width with width
-    
-    with st.spinner("Running prediction..."):
+    st.image(display_image, caption=get_text("uploaded_image_caption", st.session_state.lang), width=500)
+
+    with st.spinner(get_text("running_prediction", st.session_state.lang)):
         predicted_class_idx = ensemble_predict(image)
 
     if predicted_class_idx != -1: # Check for valid prediction index
@@ -387,23 +419,23 @@ if uploaded_file is not None:
 
         # Display session log table in main panel
         if st.session_state.prediction_log:
-            st.subheader("📊 Session Log")
+            st.subheader(get_text("session_log", st.session_state.lang))
 
             # Convert log to DataFrame
             df_log = pd.DataFrame(st.session_state.prediction_log)
 
             # Filter options - display translated names in selectbox, but filter by English keys
-            filter_options_display = ["All"]
+            filter_options_display = [get_text("all", st.session_state.lang)]
             # Create a map for display names (English -> Translated)
             display_name_map = {DISEASE_CLASS_NAMES_MAP[i]["english"]: DISEASE_CLASS_NAMES_MAP[i][st.session_state.lang] for i in DISEASE_CLASS_NAMES_MAP.keys()}
 
             unique_logged_results = df_log["result"].unique().tolist()
             for res_english_key in unique_logged_results:
                 filter_options_display.append(display_name_map.get(res_english_key, res_english_key))
-            
-            selected_filter_display = st.selectbox("Filter predictions by type:", filter_options_display)
 
-            if selected_filter_display == "All":
+            selected_filter_display = st.selectbox(get_text("filter_predictions", st.session_state.lang), filter_options_display)
+
+            if selected_filter_display == get_text("all", st.session_state.lang):
                 filtered_df = df_log
             else:
                 # Find the English key corresponding to the selected display name
@@ -421,4 +453,4 @@ if uploaded_file is not None:
             else:
                 st.dataframe(filtered_df, use_column_width=True)
     else:
-        st.warning("Prediction failed.")
+        st.warning(get_text("prediction_failed", st.session_state.lang))
