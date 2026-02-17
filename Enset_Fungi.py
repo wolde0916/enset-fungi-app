@@ -98,7 +98,7 @@ def load_ensemble_model():
             return (vit_out + swin_out) / 2
 
     model = EnsembleModel()
-    path = "ensemble_best.pth"
+    ensemble_model_path = "ensemble_best.pth"
 
     if not os.path.exists(path):
         return None, device
