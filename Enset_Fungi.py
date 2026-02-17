@@ -120,7 +120,7 @@ def generate_pdf(disease_name, info):
 # -------------------------------------------------
 # MODEL LOADING (CACHED – NO UI HERE)
 # -------------------------------------------------
-@st.cache_resource
+#@st.cache_resource
 from datetime import datetime
 
 from fpdf import FPDF
