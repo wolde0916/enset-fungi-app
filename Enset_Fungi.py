@@ -121,7 +121,6 @@ def generate_pdf(disease_name, info):
 # MODEL LOADING (CACHED – NO UI HERE)
 # -------------------------------------------------
 @st.cache_resource
-=======
 from datetime import datetime
 from fpdf import FPDF
 
@@ -277,7 +276,6 @@ def load_ensemble_model():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     num_classes = 4
-=======
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     class EnsembleModel(nn.Module):
         def __init__(self):
