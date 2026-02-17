@@ -122,6 +122,7 @@ def generate_pdf(disease_name, info):
 # -------------------------------------------------
 @st.cache_resource
 from datetime import datetime
+
 from fpdf import FPDF
 
 # -----------------------------
