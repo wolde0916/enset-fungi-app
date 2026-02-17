@@ -386,7 +386,7 @@ st.sidebar.write("🏫 Dilla University")
 st.title(get_text("app_title"))
 
 uploaded_file = st.file_uploader()
-    get_text("upload_image_label"),
+get_text("upload_image_label"),
 # -----------------------------
 # MAIN UI
 # -----------------------------
