@@ -52,7 +52,7 @@ TREATMENT_MAP = {
     }
 }
 
-@st.cache_data
+#@st.cache_data
 def generate_handbook(lang):
     handbook = []
     handbook.append(get_text("app_title", lang))
@@ -113,7 +113,7 @@ st.sidebar.markdown(
 )
 
 # --- Lazy imports and model logic ---
-@st.cache_resource
+#@st.cache_resource
 def load_ensemble_model():
     import torch
     import torch.nn as nn
