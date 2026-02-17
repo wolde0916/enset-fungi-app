@@ -98,7 +98,7 @@ def load_ensemble_model():
             return (vit_out + swin_out) / 2
 
     data_dir = '/content/drive/MyDrive/Enset/Enset_Fungi/plots'
-    ensemble_model_path = os.path.join(data_dir, 'ensemble_final.pth')
+    ensemble_model_path = os.path.join(data_dir, 'ensemble_best.pth')
 
     progress = st.progress(0)
     model = EnsembleModel(num_classes)
